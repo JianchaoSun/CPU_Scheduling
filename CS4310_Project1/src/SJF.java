@@ -16,7 +16,8 @@ public class SJF {
 	public static void main(String[]args) throws FileNotFoundException {
 		readFile("");
 		running();
-		System.out.println(getAVT());
+		System.out.println("The average waiting time: "+getAVT());
+		System.out.println("The average turn around time: "+getATT());
 	/*	for(sjfTask s: taskList) {
 			pq.add(s);
 		}
@@ -39,16 +40,28 @@ public class SJF {
 			}
 			if(runnin[0]!=null) {
 	             if(!runnin[0].processing()) {
+	            	 runnin[0].setCompleteTime(time);
+	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime());
+	            	 runnin[0].setTurnAroundTime();
 	            	 runnin[0]=null;
 			}
 			}
 			else {
 				System.out.println("No process running at this time");
 			}
-			updateWaitTime();
-			
+			updateWaitTime();		
 		}
 	}
+	
+	public static double getATT() {
+		double turnAround = 0;
+		for(sjfTask t:taskList) {
+			turnAround+=t.getTurnAroundTime();
+		}
+		return turnAround/taskList.size();
+	}
+	
+	
 	
 	public static double getAVT() {
 		double totalTime =0;
@@ -129,6 +142,7 @@ class sjfTask implements Comparable<sjfTask>{
 	private double completeTime;
 	int lifeCycle = 0;
 	private int waitTime = 0;
+	private double turnAroundTime =0;
 	public sjfTask(int pid, int arrt, int burt, int pri) {
 		Pid =pid;
 		Arrival_Time = arrt;
@@ -184,6 +198,12 @@ class sjfTask implements Comparable<sjfTask>{
 	}
 	public void updateWaitTime() {
 		waitTime ++;
+	}
+	public double getTurnAroundTime() {
+		return turnAroundTime;
+	}
+	public void setTurnAroundTime() {
+		this.turnAroundTime = completeTime - Arrival_Time;
 	}
 	
 }
