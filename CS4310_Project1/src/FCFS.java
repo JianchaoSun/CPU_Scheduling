@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.TimerTask;
 
-public class FCFS {
+public class FCFS implements CPU_Scheduling{
 	static List<Task> taskList = new ArrayList<Task>();
 	static double turnAround[];
 	static int art,att,cur;
@@ -14,13 +14,14 @@ public class FCFS {
 	public static void main(String[] args) throws FileNotFoundException {
 		readFile("");
 		Collections.sort(taskList);
-		printProcess();
-		System.out.println("Awt:"+findAWT());
+	/*	printProcess();
+    	System.out.println("Awt:"+getAWT());
 		System.out.println("Att:"+findATT());
 		System.out.println("Art:"+findART());
+		*/
 	}
 	
-	public static double findATT() {
+	public double getATT() {
 		double totalAtt =0;
 		//we know turn around time equal complete time - arrive time
 		//and we don't know complete time, so we want to calculate first
@@ -46,8 +47,8 @@ public class FCFS {
 		return totalAtt/turnAround.length;		
 	}
 	
-	public static double findAWT() {
-		findATT();//since waiting time equals turn around time-burst time, we find turn around time first
+	public double getAWT() {
+		getATT();//since waiting time equals turn around time-burst time, we find turn around time first
 		double totalW =0;
 		for(int i=0;i<taskList.size();i++) {
 			totalW+= turnAround[i] - taskList.get(i).getBurst_Time();
@@ -56,8 +57,8 @@ public class FCFS {
 		return totalW/taskList.size(); //find average time
 	}
 	
-	public static double findART() {
-		return findATT()-findAWT();
+	public double getART() {
+		return getATT()-getAWT();
 	}
 	
 	public static double findCompleteTime(double t1, Task t2) {
@@ -76,8 +77,9 @@ public class FCFS {
 		 */
 	}
 	
-	public static void printProcess() {
+	public void run() throws FileNotFoundException {
 		//simple process to print task running using thread
+		readFile("");
 		for(int i=0;i<taskList.size();i++) {
 			for(int j=0;j<taskList.get(i).getBurst_Time();j++) {
 		try {
