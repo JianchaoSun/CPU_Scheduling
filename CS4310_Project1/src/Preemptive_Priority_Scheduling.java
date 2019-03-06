@@ -157,6 +157,7 @@ class ppsTask implements Comparable<ppsTask>{
 	private double completeTime;
 	int lifeCycle = 0;//when the process is running, update its time
 	private int waitTime = 0;
+	//private int timeLeft=0;
 	private double turnAroundTime =0;
 	private double responseTime = -1;
 	public ppsTask(int pid, int arrt, int burt, int pri) {
@@ -167,7 +168,7 @@ class ppsTask implements Comparable<ppsTask>{
 	//	System.out.print("Pid: "+Pid+"\nArrT: "+Arrival_Time+"\nBurT: "+Burst_Time+"\nPri: "+Priority+"\n");		
 	}
 	public void killProcess() {
-		lifeCycle =0;
+		//lifeCycle =0;
 	}
 	public boolean processing() {
 		lifeCycle++;
@@ -227,7 +228,7 @@ class ppsTask implements Comparable<ppsTask>{
 	}
 	public void setTurnAroundTime() {
 		//calculate the turn around time of individual task
-		this.turnAroundTime = completeTime - Arrival_Time;
+		this.turnAroundTime = completeTime - Arrival_Time+1;
 	}
 	public double getResponseTime() {
 		return responseTime;
