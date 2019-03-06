@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
-public class SJF {
+public class SJF implements CPU_Scheduling{
 	static List<sjfTask> taskList = new ArrayList<sjfTask>();
 	static double turnAround[];
 	static int art,att,cur;
@@ -15,10 +15,10 @@ public class SJF {
 	
 	public static void main(String[]args) throws FileNotFoundException {
 		readFile("");
-		running();
+	/*	run();
 		System.out.println("The average waiting time: "+getAVT());
 		System.out.println("The average turn around time: "+getATT());
-	/*	for(sjfTask s: taskList) {
+		for(sjfTask s: taskList) {
 			pq.add(s);
 		}
 		
@@ -28,7 +28,8 @@ public class SJF {
 		*/
 	}
 	
-	public static void running() {
+	public void run() throws FileNotFoundException {//when cpu start to function
+		readFile("");
 		int count=0;
 		int time =0;
 		sjfTask[] runnin=new sjfTask[1];
@@ -48,12 +49,14 @@ public class SJF {
 			}
 			else {
 				System.out.println("No process running at this time");
+				//if no process in queue
 			}
 			updateWaitTime();		
 		}
 	}
 	
-	public static double getATT() {
+	public double getATT() {
+		//calculate turn around time
 		double turnAround = 0;
 		for(sjfTask t:taskList) {
 			turnAround+=t.getTurnAroundTime();
@@ -63,7 +66,8 @@ public class SJF {
 	
 	
 	
-	public static double getAVT() {
+	public double getAWT() {
+		//calculate wait time
 		double totalTime =0;
 		for(sjfTask t:taskList) {
 			totalTime +=t.getWaitTime();
@@ -75,6 +79,7 @@ public class SJF {
 	}
 	
 	public static int addTaskToQueue(int time) {
+		//when one or more processes is ready, add them to ready queue 
 		int taskAdded = 0;
 		for(sjfTask t: taskList) {
 			if(t.getArrival_Time() == time) {
@@ -84,11 +89,12 @@ public class SJF {
 				taskAdded++;
 			}
 		}
+		//record how many tasks were added at once
 		return taskAdded;
 	}
 	
 	public static void updateWaitTime() {
-		
+		//for all tasks already in ready queue, update their waiting time every millisecond 
 		for(sjfTask t: pq) {
 			t.updateWaitTime();
 			System.out.println(t.getPid()+" is updated time");
@@ -100,6 +106,7 @@ public class SJF {
 		Collections.sort(taskList, new Comparator<sjfTask>() {
 			@Override
 			public int compare(sjfTask o1, sjfTask o2) {
+				//compare by arrive time
 				return o1.getArrival_Time()- o2.getArrival_Time();
 			}
 		});
@@ -128,6 +135,12 @@ public class SJF {
 			  }
 		  
 	}
+
+
+	@Override
+	public double getART() {
+		return getATT()-getAWT();
+	}
 	
 
 }
@@ -140,7 +153,7 @@ class sjfTask implements Comparable<sjfTask>{
 	private int Burst_Time ;
 	private int Priority;
 	private double completeTime;
-	int lifeCycle = 0;
+	int lifeCycle = 0;//when the process is running, update its time
 	private int waitTime = 0;
 	private double turnAroundTime =0;
 	public sjfTask(int pid, int arrt, int burt, int pri) {
@@ -153,11 +166,14 @@ class sjfTask implements Comparable<sjfTask>{
 	public boolean processing() {
 		lifeCycle++;
 		System.out.println("Process "+Pid+" is running");
-		return lifeCycle != Burst_Time;
+		//when a process is running
+		return lifeCycle != Burst_Time; //return if the process is finished
 	}
 	public void printSt() {
 		System.out.print("Pid: "+Pid+"\nArrT: "+Arrival_Time+"\nBurT: "+Burst_Time+"\nPri: "+Priority+"\n");
 	}
+	
+	//most below are basic getter and setter
 	public int getPid() {
 		return Pid;
 	}
@@ -197,12 +213,14 @@ class sjfTask implements Comparable<sjfTask>{
 		return waitTime;
 	}
 	public void updateWaitTime() {
+		//update individual wait time
 		waitTime ++;
 	}
 	public double getTurnAroundTime() {
 		return turnAroundTime;
 	}
 	public void setTurnAroundTime() {
+		//calculate the turn around time of individual task
 		this.turnAroundTime = completeTime - Arrival_Time;
 	}
 	
