@@ -12,7 +12,7 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 	static List<ppsTask> taskList = new ArrayList<ppsTask>();
 	static double turnAround[];
 	static int art,att,cur;
-	
+	final static int DOUBLE_TO_INT =100;
 	static PriorityQueue <ppsTask>pq = new PriorityQueue<ppsTask>();
 
 	@Override
@@ -26,7 +26,6 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 		ppsTask[] runnin=new ppsTask[1];
 //		count+=addTaskToQueue(0);
 		while(!pq.isEmpty()||count<taskList.size()||runnin[0]!=null) {
-			System.out.println("Time: "+time);
 			count += addTaskToQueue(time);
 			if(!pq.isEmpty()&&runnin[0]==null) {
 				runnin[0]=pq.poll();
@@ -39,9 +38,9 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 	            		 runnin[0] = pq.poll();
 	            		 runnin[0].setResponseTime(time-runnin[0].getArrival_Time());
 	            	 }
-				 if(!runnin[0].processing()) {
+				 if(!runnin[0].processing(time)) {
 	            	 runnin[0].setCompleteTime(time);
-	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/10);
+	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/DOUBLE_TO_INT);
 	            	 runnin[0].setTurnAroundTime();
 	            	 runnin[0]=null;
 	            	 }
@@ -51,8 +50,8 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 				//if no process in queue
 				idle++;
 			}
-			time++;
 			updateWaitTime();	
+			time++;
 		}	
 		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT()+"\nCpu utilization rate:"
 				+ (time-idle)/time);
@@ -76,7 +75,7 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 		for(ppsTask t:taskList) {
 			turnAround+=t.getTurnAroundTime();
 		}
-		return (turnAround/taskList.size())/10;
+		return (turnAround/taskList.size())/DOUBLE_TO_INT;
 	}	
 	
 	public double getAWT() {
@@ -85,7 +84,7 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 		for(ppsTask t:taskList) {
 			totalTime +=t.getWaitTime();	
 		}
-		return (totalTime/taskList.size())/10;		
+		return (totalTime/taskList.size())/DOUBLE_TO_INT;		
 	}
 	
 	public static void readFile(String fil) throws FileNotFoundException{
@@ -101,8 +100,8 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 		        pid = scanner.nextInt(); 
 		        arrt = scanner.nextDouble();
 		        burt = scanner.nextDouble(); 
-		        int burt1 = (int) (burt*10);
-		        int arrt1 = (int)(arrt*10);
+		        int burt1 = (int) (burt*DOUBLE_TO_INT);
+		        int arrt1 = (int)(arrt*DOUBLE_TO_INT);
 		        pri = scanner.nextInt();
 		        taskList.add(new ppsTask(pid,arrt1,burt1,pri));  //add to list
       
@@ -144,10 +143,9 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 		//for all tasks already in ready queue, update their waiting time every millisecond 
 		for(ppsTask t: pq) {
 			t.updateWaitTime();
-			System.out.println(t.getPid()+" is updated time");
-		}
 	}
 
+}
 }
 
 
@@ -174,9 +172,10 @@ class ppsTask implements Comparable<ppsTask>{
 	public void killProcess() {
 		//lifeCycle =0;
 	}
-	public boolean processing() {
+	public boolean processing(int i) {
 		lifeCycle++;
-		System.out.println("Process "+Pid+" is running "+lifeCycle);
+		if(i%100==0) 
+		System.out.println("Process "+Pid+" is running ");
 		//when a process is running
 		return lifeCycle != Burst_Time; //return if the process is finished
 	}
@@ -242,5 +241,6 @@ class ppsTask implements Comparable<ppsTask>{
 		this.responseTime = responseTime;
 		}
 	}
-	
 }
+	
+

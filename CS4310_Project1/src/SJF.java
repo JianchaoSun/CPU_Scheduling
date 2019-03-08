@@ -11,6 +11,7 @@ public class SJF implements CPU_Scheduling{
 	static List<sjfTask> taskList = new ArrayList<sjfTask>();
 	static double turnAround[];
 	static int art,att,cur;
+	final static int DOUBLE_TO_INT =100;
 	static PriorityQueue <sjfTask>pq = new PriorityQueue<sjfTask>();
 	
 	public static void main(String[]args) throws FileNotFoundException {
@@ -43,7 +44,7 @@ public class SJF implements CPU_Scheduling{
 			if(runnin[0]!=null) {
 	             if(!runnin[0].processing(time)) {
 	            	 runnin[0].setCompleteTime(time);
-	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/10);
+	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/DOUBLE_TO_INT);
 	            	 runnin[0].setTurnAroundTime();
 	            	 runnin[0]=null;
 			}
@@ -65,7 +66,7 @@ public class SJF implements CPU_Scheduling{
 		for(sjfTask t:taskList) {
 			turnAround+=t.getTurnAroundTime();
 		}
-		return (turnAround/taskList.size())/10;
+		return (turnAround/taskList.size())/DOUBLE_TO_INT;
 	}
 	
 	
@@ -77,7 +78,7 @@ public class SJF implements CPU_Scheduling{
 			totalTime +=t.getWaitTime();
 			
 		}
-		return (totalTime/taskList.size())/10;
+		return (totalTime/taskList.size())/DOUBLE_TO_INT;
 		
 	}
 	
@@ -129,8 +130,8 @@ public class SJF implements CPU_Scheduling{
 		        pid = scanner.nextInt(); 
 		        arrt = scanner.nextDouble();
 		        burt = scanner.nextDouble(); 
-		        int burt1 = (int) (burt*10);
-		        int arrt1 = (int)(arrt*10);
+		        int burt1 = (int) (burt*DOUBLE_TO_INT);
+		        int arrt1 = (int)(arrt*DOUBLE_TO_INT);
 		        pri = scanner.nextInt();
 		        taskList.add(new sjfTask(pid,arrt1,burt1,pri)); //add to list
 		    }
@@ -170,7 +171,7 @@ class sjfTask implements Comparable<sjfTask>{
 	}
 	public boolean processing(int i) {
 		lifeCycle++;
-		if(i%10==0) {
+		if(i%100==0) {
 		System.out.println("Process "+Pid+" is running");
 		}
 		//when a process is running

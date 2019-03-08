@@ -14,6 +14,7 @@ public class FCFS implements CPU_Scheduling{
 	static double turnAround[];
 	static int art,att,cur;
 	static Queue <Task>pq = new LinkedList<Task>();
+	final static int DOUBLE_TO_INT = 100; //the program can handle most double number with 2 digit decimal
 	
 	public static void main(String[]args) throws FileNotFoundException {
 		readFile("");
@@ -38,14 +39,14 @@ public class FCFS implements CPU_Scheduling{
 		Task[] runnin=new Task[1];
 		sortByArriveTime();
 		while(!pq.isEmpty()||count<taskList.size()||runnin[0]!=null) {
-			count += addTaskToQueue(time++);
+			count += addTaskToQueue(time);
 			if(!pq.isEmpty()&&runnin[0]==null) {
 				runnin[0]=pq.poll();
 			}
 			if(runnin[0]!=null) {
 	             if(!runnin[0].processing(time)) {
 	            	 runnin[0].setCompleteTime(time);
-	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/10);
+	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/DOUBLE_TO_INT);
 	            	 runnin[0].setTurnAroundTime();
 	            	 runnin[0]=null;
 			}
@@ -55,7 +56,8 @@ public class FCFS implements CPU_Scheduling{
 				//if no process in queue
 				idle++;
 			}
-			updateWaitTime();		
+			updateWaitTime();	
+			time++;
 		}
 		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT()+"\nCpu utilization rate:"
 				+ (time-idle)/time);
@@ -67,7 +69,7 @@ public class FCFS implements CPU_Scheduling{
 		for(Task t:taskList) {
 			turnAround+=t.getTurnAroundTime();
 		}
-		return (turnAround/taskList.size())/10;
+		return (turnAround/taskList.size())/DOUBLE_TO_INT;
 	}
 	
 	
@@ -79,7 +81,7 @@ public class FCFS implements CPU_Scheduling{
 			totalTime +=t.getWaitTime();
 			
 		}
-		return (totalTime/taskList.size())/10;
+		return (totalTime/taskList.size())/DOUBLE_TO_INT;
 		
 	}
 	
@@ -102,7 +104,7 @@ public class FCFS implements CPU_Scheduling{
 		//for all tasks already in ready queue, update their waiting time every millisecond 
 		for(Task t: pq) {
 			t.updateWaitTime();
-		//	System.out.println(t.getPid()+" is updated time");
+			
 		}
 	}
 	
@@ -131,8 +133,8 @@ public class FCFS implements CPU_Scheduling{
 		        pid = scanner.nextInt(); 
 		        arrt = scanner.nextDouble();
 		        burt = scanner.nextDouble(); 
-		        int burt1 = (int) (burt*10);
-		        int arrt1 = (int)(arrt*10);
+		        int burt1 = (int) (burt*DOUBLE_TO_INT);
+		        int arrt1 = (int)(arrt*DOUBLE_TO_INT);
 		        pri = scanner.nextInt();
 		        taskList.add(new Task(pid,arrt1,burt1,pri)); //add to list
 		    }
@@ -172,7 +174,7 @@ class Task implements Comparable<sjfTask>{
 	}
 	public boolean processing(int i) {
 		lifeCycle++;
-		if(i%10==0) {
+		if(i%100==0) {
 		System.out.println("Process "+Pid+" is running");
 		}
 		//when a process is running
