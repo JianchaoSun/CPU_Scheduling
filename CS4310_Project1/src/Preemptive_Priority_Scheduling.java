@@ -12,6 +12,7 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 	static List<ppsTask> taskList = new ArrayList<ppsTask>();
 	static double turnAround[];
 	static int art,att,cur;
+	
 	static PriorityQueue <ppsTask>pq = new PriorityQueue<ppsTask>();
 
 	@Override
@@ -20,6 +21,7 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 		sortByArriveTime();	
 		int count=0;
 		int time =0;
+		int idle =0;
 		
 		ppsTask[] runnin=new ppsTask[1];
 //		count+=addTaskToQueue(0);
@@ -39,7 +41,7 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 	            	 }
 				 if(!runnin[0].processing()) {
 	            	 runnin[0].setCompleteTime(time);
-	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime());
+	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/10);
 	            	 runnin[0].setTurnAroundTime();
 	            	 runnin[0]=null;
 	            	 }
@@ -47,11 +49,13 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 			else {
 				System.out.println("No process running at this time");
 				//if no process in queue
+				idle++;
 			}
 			time++;
 			updateWaitTime();	
 		}	
-		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT());
+		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT()+"\nCpu utilization rate:"
+				+ (time-idle)/time);
 	}
 	
 	public boolean replaceTask(ppsTask t) {

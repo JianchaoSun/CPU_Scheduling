@@ -2,109 +2,120 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Scanner;
-import java.util.TimerTask;
 
 public class FCFS implements CPU_Scheduling{
 	static List<Task> taskList = new ArrayList<Task>();
 	static double turnAround[];
 	static int art,att,cur;
+	static Queue <Task>pq = new LinkedList<Task>();
 	
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[]args) throws FileNotFoundException {
 		readFile("");
-		Collections.sort(taskList);
-	/*	printProcess();
-    	System.out.println("Awt:"+getAWT());
-		System.out.println("Att:"+findATT());
-		System.out.println("Art:"+findART());
+	/*	run();
+		System.out.println("The average waiting time: "+getAVT());
+		System.out.println("The average turn around time: "+getATT());
+		for(sjfTask s: taskList) {
+			pq.add(s);
+		}
+		
+		for(sjfTask s: taskList) {
+			System.out.println(pq.poll().getArrival_Time());
+		}
 		*/
 	}
 	
-	public double getATT() {
-		double totalAtt =0;
-		//we know turn around time equal complete time - arrive time
-		//and we don't know complete time, so we want to calculate first
-		turnAround = new double[taskList.size()];
-		turnAround[0] = taskList.get(0).getBurst_Time();
-		//turn around for first task is just its burst time
-		taskList.get(0).setCompleteTime(taskList.get(0).getBurst_Time()+
-				taskList.get(0).getArrival_Time());//find complete time for first task
-		
-		
-		totalAtt+=turnAround[0];
-		
-		for(int i=1;i<turnAround.length;i++) {
-			taskList.get(i).setCompleteTime(findCompleteTime(taskList.get(i-1).
-					getCompleteTime(),taskList.get(i)));
-			//find complete time for each task using its previous task's complete time
-			turnAround[i] = taskList.get(i).getCompleteTime()-
-					taskList.get(i).getArrival_Time();	
-			//since we will need turn around time to find waiting time,
-			//i store them in a global array,just complete time-arrive time
-			totalAtt+=turnAround[i];
+	public void run() throws FileNotFoundException {//when cpu start to function
+		readFile("");
+		int count=0;
+		int idle =0;
+		int time =0;
+		Task[] runnin=new Task[1];
+		sortByArriveTime();
+		while(!pq.isEmpty()||count<taskList.size()||runnin[0]!=null) {
+			count += addTaskToQueue(time++);
+			if(!pq.isEmpty()&&runnin[0]==null) {
+				runnin[0]=pq.poll();
+			}
+			if(runnin[0]!=null) {
+	             if(!runnin[0].processing(time)) {
+	            	 runnin[0].setCompleteTime(time);
+	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/10);
+	            	 runnin[0].setTurnAroundTime();
+	            	 runnin[0]=null;
+			}
+			}
+			else {
+				System.out.println("No process running at this time");
+				//if no process in queue
+				idle++;
+			}
+			updateWaitTime();		
 		}
-		return totalAtt/turnAround.length;		
+		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT()+"\nCpu utilization rate:"
+				+ (time-idle)/time);
 	}
+	
+	public double getATT() {
+		//calculate turn around time
+		double turnAround = 0;
+		for(Task t:taskList) {
+			turnAround+=t.getTurnAroundTime();
+		}
+		return (turnAround/taskList.size())/10;
+	}
+	
+	
 	
 	public double getAWT() {
-		getATT();//since waiting time equals turn around time-burst time, we find turn around time first
-		double totalW =0;
-		for(int i=0;i<taskList.size();i++) {
-			totalW+= turnAround[i] - taskList.get(i).getBurst_Time();
-			//calculate each waiting time and add them together
+		//calculate wait time
+		double totalTime =0;
+		for(Task t:taskList) {
+			totalTime +=t.getWaitTime();
+			
 		}
-		return totalW/taskList.size(); //find average time
+		return (totalTime/taskList.size())/10;
+		
 	}
 	
-	public double getART() {
-		return getATT()-getAWT();
-	}
-	
-	public static double findCompleteTime(double t1, Task t2) {
-	//find complete time of tasks
-		if(t1 <=t2.getArrival_Time()) {
-			return t2.getArrival_Time() + t2.getBurst_Time();
-			/*if current task arrive after previous task complete
-			 * complete time will just be its arrive time +
-			 * its burst time
-			 */
-		}
-		return t1 +t2.getBurst_Time();	
-		/*if current task arrive before previous task complete,
-		 * need to wait for previous to finish
-		 * complete time will be previous complete time + current burst time	
-		 */
-	}
-	
-	/*public void run() throws FileNotFoundException {
-		
-		
-		
-		
-		
-	}*/
-	
-	public void run() throws FileNotFoundException {
-		//simple process to print task running using thread
-
-		readFile("");
-		for(int i=0;i<taskList.size();i++) {
-			for(int j=0;j<taskList.get(i).getBurst_Time();j++) {
-		try {
-	        Thread.sleep(1);
-	    } catch(Exception e) {
-	        System.out.println("Exception : "+e.getMessage());
-	    }
-		String st = "Processing task "+taskList.get(i).getPid();
-        System.out.println(st);
+	public static int addTaskToQueue(int time) {
+		//when one or more processes is ready, add them to ready queue 
+		int taskAdded = 0;
+		for(Task t: taskList) {
+			if(t.getArrival_Time() == time) {
+				if(pq.add(t)) {
+				System.out.println(t.getPid()+" is added to waiting queue");
+				}
+				taskAdded++;
 			}
 		}
-		
-		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT());
+		//record how many tasks were added at once
+		return taskAdded;
 	}
-
-
+	
+	public static void updateWaitTime() {
+		//for all tasks already in ready queue, update their waiting time every millisecond 
+		for(Task t: pq) {
+			t.updateWaitTime();
+		//	System.out.println(t.getPid()+" is updated time");
+		}
+	}
+	
+	public static void sortByArriveTime() {
+		//simple sorting method to sort list by arrive time
+		Collections.sort(taskList, new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+				//compare by arrive time
+				return o1.getArrival_Time()- o2.getArrival_Time();
+			}
+		});
+	}
 	
 	
 	public static void readFile(String fil) throws FileNotFoundException{
@@ -118,11 +129,12 @@ public class FCFS implements CPU_Scheduling{
 		    	double arrt=0,burt=0;
 		               	
 		        pid = scanner.nextInt(); 
-                arrt = scanner.nextDouble();
+		        arrt = scanner.nextDouble();
 		        burt = scanner.nextDouble(); 
+		        int burt1 = (int) (burt*10);
+		        int arrt1 = (int)(arrt*10);
 		        pri = scanner.nextInt();
-		        taskList.add(new Task(pid,arrt,burt,pri)); //add to list
-      
+		        taskList.add(new Task(pid,arrt1,burt1,pri)); //add to list
 		    }
 		  } finally
 		  {
@@ -131,50 +143,59 @@ public class FCFS implements CPU_Scheduling{
 		  
 	}
 
-}
-class PrintTask extends TimerTask {
-	String st="";
-	public PrintTask(String st) {
-		this.st = st;
+
+	@Override
+	public double getART() {
+		return getATT()-getAWT();
 	}
-    public void run() {
-       System.out.println(st); 
-    }
+	
+
 }
 
-
-class Task implements Comparable<Task>{
+class Task implements Comparable<sjfTask>{
 	//simple class that represent task object,
 	//only contain basic data, getter, setter and complete time of each task
 	private int Pid ;
-	private double Arrival_Time ;
-	private double Burst_Time ;
+	private int Arrival_Time ;
+	private int Burst_Time ;
 	private int Priority;
 	private double completeTime;
-	public Task(int pid, double arrt, double burt, int pri) {
+	int lifeCycle = 0;//when the process is running, update its time
+	private int waitTime = 0;
+	private double turnAroundTime =0;
+	public Task(int pid, int arrt, int burt, int pri) {
 		Pid =pid;
 		Arrival_Time = arrt;
 		Burst_Time = burt;
 		Priority = pri;
-	//	System.out.print("Pid: "+Pid+"\nArrT: "+Arrival_Time+"\nBurT: "+Burst_Time+"\nPri: "+Priority+"\n");
-		
+	//	System.out.print("Pid: "+Pid+"\nArrT: "+Arrival_Time+"\nBurT: "+Burst_Time+"\nPri: "+Priority+"\n");		
+	}
+	public boolean processing(int i) {
+		lifeCycle++;
+		if(i%10==0) {
+		System.out.println("Process "+Pid+" is running");
+		}
+		//when a process is running
+		return lifeCycle != Burst_Time; //return if the process is finished
 	}
 	public void printSt() {
 		System.out.print("Pid: "+Pid+"\nArrT: "+Arrival_Time+"\nBurT: "+Burst_Time+"\nPri: "+Priority+"\n");
 	}
+	
+	//most below are basic getter and setter
 	public int getPid() {
 		return Pid;
 	}
 	public void setPid(int pid) {
 		Pid = pid;
 	}
-	public double getArrival_Time() {
+	public int getArrival_Time() {
 		return Arrival_Time;
 	}
 	public void setArrival_Time(int arrival_Time) {
 		Arrival_Time = arrival_Time;
 	}
-	public double getBurst_Time() {
+	public int getBurst_Time() {
 		return Burst_Time;
 	}
 	public void setBurst_Time(int burst_Time) {
@@ -188,17 +209,28 @@ class Task implements Comparable<Task>{
 	}
 	//task class implements comparable so i can sort it easily 
 	@Override
-	public int compareTo(Task t) {
-		if(Arrival_Time- t.getArrival_Time()>0) {
-			return 1;
-		}
-		return 0;
+	public int compareTo(sjfTask t) {
+		return Burst_Time- t.getBurst_Time();
 	}
 	public double getCompleteTime() {
 		return completeTime;
 	}
 	public void setCompleteTime(double completeTime) {
 		this.completeTime = completeTime;
+	}
+	public int getWaitTime() {
+		return waitTime;
+	}
+	public void updateWaitTime() {
+		//update individual wait time
+		waitTime ++;
+	}
+	public double getTurnAroundTime() {
+		return turnAroundTime;
+	}
+	public void setTurnAroundTime() {
+		//calculate the turn around time of individual task
+		this.turnAroundTime = completeTime - Arrival_Time;
 	}
 	
 }

@@ -32,6 +32,7 @@ public class SJF implements CPU_Scheduling{
 		readFile("");
 		int count=0;
 		int time =0;
+		int idle =0;
 		sjfTask[] runnin=new sjfTask[1];
 		sortByArriveTime();
 		while(!pq.isEmpty()||count<taskList.size()||runnin[0]!=null) {
@@ -50,11 +51,12 @@ public class SJF implements CPU_Scheduling{
 			else {
 				System.out.println("No process running at this time");
 				//if no process in queue
+				idle++;
 			}
 			updateWaitTime();		
 		}
-		
-		System.out.print("ATT: "+getATT()+"\nAWT: "+getAWT()+"\nART: "+getART());
+		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT()+"\nCpu utilization rate:"
+				+ (time-idle)/time);
 	}
 	
 	public double getATT() {
