@@ -51,9 +51,10 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 			time++;
 			updateWaitTime();	
 		}	
+		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT());
 		for(ppsTask t:taskList) {
-			System.out.println(t.getPid()+":"+t.getArrival_Time()+" complete:"+t.getCompleteTime()+
-					" response: "+t.getResponseTime()+" turnaround:"+t.getTurnAroundTime());
+			System.out.println(t.getPid()+":"+t.getArrival_Time()/10+" complete:"+t.getCompleteTime()/10+
+					" response: "+t.getResponseTime()/10+" turnaround:"+t.getTurnAroundTime()/10);
 		}
 	}
 	
@@ -75,17 +76,16 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 		for(ppsTask t:taskList) {
 			turnAround+=t.getTurnAroundTime();
 		}
-		return turnAround/taskList.size();
+		return (turnAround/taskList.size())/10;
 	}	
 	
 	public double getAWT() {
 		//calculate wait time
 		double totalTime =0;
 		for(ppsTask t:taskList) {
-			totalTime +=t.getWaitTime();
-			System.out.println(t.getWaitTime());		
+			totalTime +=t.getWaitTime();	
 		}
-		return totalTime/taskList.size();		
+		return (totalTime/taskList.size())/10;		
 	}
 	
 	public static void readFile(String fil) throws FileNotFoundException{
@@ -95,12 +95,16 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 		  {
 		    while( scanner.hasNext() )
 		    {
-		    	int pid = 0,arrt=0,burt=0,pri=0;           	
+		    	int pid = 0,pri =0;
+		    	double arrt=0,burt=0;
+		               	
 		        pid = scanner.nextInt(); 
-		        arrt = scanner.nextInt();
-		        burt = scanner.nextInt(); 
+		        arrt = scanner.nextDouble();
+		        burt = scanner.nextDouble(); 
+		        int burt1 = (int) (burt*10);
+		        int arrt1 = (int)(arrt*10);
 		        pri = scanner.nextInt();
-		        taskList.add(new ppsTask(pid,arrt,burt,pri)); //add to list
+		        taskList.add(new ppsTask(pid,arrt1,burt1,pri));  //add to list
       
 		    }
 		  } finally

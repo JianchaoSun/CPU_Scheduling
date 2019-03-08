@@ -40,9 +40,9 @@ public class SJF implements CPU_Scheduling{
 				runnin[0]=pq.poll();
 			}
 			if(runnin[0]!=null) {
-	             if(!runnin[0].processing()) {
+	             if(!runnin[0].processing(time)) {
 	            	 runnin[0].setCompleteTime(time);
-	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime());
+	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/10);
 	            	 runnin[0].setTurnAroundTime();
 	            	 runnin[0]=null;
 			}
@@ -53,6 +53,8 @@ public class SJF implements CPU_Scheduling{
 			}
 			updateWaitTime();		
 		}
+		
+		System.out.print("ATT: "+getATT()+"\nAWT: "+getAWT()+"\nART: "+getART());
 	}
 	
 	public double getATT() {
@@ -61,7 +63,7 @@ public class SJF implements CPU_Scheduling{
 		for(sjfTask t:taskList) {
 			turnAround+=t.getTurnAroundTime();
 		}
-		return turnAround/taskList.size();
+		return (turnAround/taskList.size())/10;
 	}
 	
 	
@@ -71,10 +73,9 @@ public class SJF implements CPU_Scheduling{
 		double totalTime =0;
 		for(sjfTask t:taskList) {
 			totalTime +=t.getWaitTime();
-			System.out.println(t.getWaitTime());
 			
 		}
-		return totalTime/taskList.size();
+		return (totalTime/taskList.size())/10;
 		
 	}
 	
@@ -97,7 +98,7 @@ public class SJF implements CPU_Scheduling{
 		//for all tasks already in ready queue, update their waiting time every millisecond 
 		for(sjfTask t: pq) {
 			t.updateWaitTime();
-			System.out.println(t.getPid()+" is updated time");
+		//	System.out.println(t.getPid()+" is updated time");
 		}
 	}
 	
@@ -120,14 +121,16 @@ public class SJF implements CPU_Scheduling{
 		  {
 		    while( scanner.hasNext() )
 		    {
-		    	int pid = 0,arrt=0,burt=0,pri=0;
+		    	int pid = 0,pri =0;
+		    	double arrt=0,burt=0;
 		               	
 		        pid = scanner.nextInt(); 
-		        arrt = scanner.nextInt();
-		        burt = scanner.nextInt(); 
+		        arrt = scanner.nextDouble();
+		        burt = scanner.nextDouble(); 
+		        int burt1 = (int) (burt*10);
+		        int arrt1 = (int)(arrt*10);
 		        pri = scanner.nextInt();
-		        taskList.add(new sjfTask(pid,arrt,burt,pri)); //add to list
-      
+		        taskList.add(new sjfTask(pid,arrt1,burt1,pri)); //add to list
 		    }
 		  } finally
 		  {
@@ -163,9 +166,11 @@ class sjfTask implements Comparable<sjfTask>{
 		Priority = pri;
 	//	System.out.print("Pid: "+Pid+"\nArrT: "+Arrival_Time+"\nBurT: "+Burst_Time+"\nPri: "+Priority+"\n");		
 	}
-	public boolean processing() {
+	public boolean processing(int i) {
 		lifeCycle++;
+		if(i%10==0) {
 		System.out.println("Process "+Pid+" is running");
+		}
 		//when a process is running
 		return lifeCycle != Burst_Time; //return if the process is finished
 	}

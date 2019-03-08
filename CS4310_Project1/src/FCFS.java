@@ -77,8 +77,17 @@ public class FCFS implements CPU_Scheduling{
 		 */
 	}
 	
+	/*public void run() throws FileNotFoundException {
+		
+		
+		
+		
+		
+	}*/
+	
 	public void run() throws FileNotFoundException {
 		//simple process to print task running using thread
+
 		readFile("");
 		for(int i=0;i<taskList.size();i++) {
 			for(int j=0;j<taskList.get(i).getBurst_Time();j++) {
@@ -91,14 +100,11 @@ public class FCFS implements CPU_Scheduling{
         System.out.println(st);
 			}
 		}
-		/*f
-		 * Timer timer = new Timer();
-		 * or(int i=0;i<taskList.size();i++) {
-			String st = "Processing task "+taskList.get(i).getPid();
-		    timer.schedule(new PrintTask(st), 1, taskList.get(i).getBurst_Time());
-		}
-		*/
+		
+		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT());
 	}
+
+
 	
 	
 	public static void readFile(String fil) throws FileNotFoundException{
@@ -108,11 +114,12 @@ public class FCFS implements CPU_Scheduling{
 		  {
 		    while( scanner.hasNext() )
 		    {
-		    	int pid = 0,arrt=0,burt=0,pri=0;
+		    	int pid = 0,pri =0;
+		    	double arrt=0,burt=0;
 		               	
 		        pid = scanner.nextInt(); 
-		        arrt = scanner.nextInt();
-		        burt = scanner.nextInt(); 
+                arrt = scanner.nextDouble();
+		        burt = scanner.nextDouble(); 
 		        pri = scanner.nextInt();
 		        taskList.add(new Task(pid,arrt,burt,pri)); //add to list
       
@@ -140,11 +147,11 @@ class Task implements Comparable<Task>{
 	//simple class that represent task object,
 	//only contain basic data, getter, setter and complete time of each task
 	private int Pid ;
-	private int Arrival_Time ;
-	private int Burst_Time ;
+	private double Arrival_Time ;
+	private double Burst_Time ;
 	private int Priority;
 	private double completeTime;
-	public Task(int pid, int arrt, int burt, int pri) {
+	public Task(int pid, double arrt, double burt, int pri) {
 		Pid =pid;
 		Arrival_Time = arrt;
 		Burst_Time = burt;
@@ -161,13 +168,13 @@ class Task implements Comparable<Task>{
 	public void setPid(int pid) {
 		Pid = pid;
 	}
-	public int getArrival_Time() {
+	public double getArrival_Time() {
 		return Arrival_Time;
 	}
 	public void setArrival_Time(int arrival_Time) {
 		Arrival_Time = arrival_Time;
 	}
-	public int getBurst_Time() {
+	public double getBurst_Time() {
 		return Burst_Time;
 	}
 	public void setBurst_Time(int burst_Time) {
@@ -182,7 +189,10 @@ class Task implements Comparable<Task>{
 	//task class implements comparable so i can sort it easily 
 	@Override
 	public int compareTo(Task t) {
-		return Arrival_Time- t.getArrival_Time();
+		if(Arrival_Time- t.getArrival_Time()>0) {
+			return 1;
+		}
+		return 0;
 	}
 	public double getCompleteTime() {
 		return completeTime;
