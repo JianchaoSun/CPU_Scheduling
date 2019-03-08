@@ -52,10 +52,6 @@ public class Preemptive_Priority_Scheduling implements CPU_Scheduling{
 			updateWaitTime();	
 		}	
 		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT());
-		for(ppsTask t:taskList) {
-			System.out.println(t.getPid()+":"+t.getArrival_Time()/10+" complete:"+t.getCompleteTime()/10+
-					" response: "+t.getResponseTime()/10+" turnaround:"+t.getTurnAroundTime()/10);
-		}
 	}
 	
 	public boolean replaceTask(ppsTask t) {
