@@ -8,6 +8,11 @@ public class sorting implements Runnable
 	static int[]x1=new int[10]; //initialize 2 array,one for store final array
 	
     public static void main(String[] args) {
+    	for(int i=0;i<x.length;i++) {
+			System.out.print(i+":"+x[i]+",");
+		}
+    	System.out.print("\nafter sorting\n");
+    	
 	/*	Thread t = new Thread(new Runnable() {
 
 			@Override

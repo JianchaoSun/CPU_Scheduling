@@ -1,5 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,7 +48,7 @@ public class FCFS implements CPU_Scheduling{
 			if(runnin[0]!=null) {
 	             if(!runnin[0].processing(time)) {
 	            	 runnin[0].setCompleteTime(time);
-	            	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/DOUBLE_TO_INT);
+	           // 	 System.out.println("Completion time of task "+runnin[0].getPid()+" is:"+runnin[0].getCompleteTime()/DOUBLE_TO_INT);
 	            	 runnin[0].setTurnAroundTime();
 	            	 runnin[0]=null;
 			}
@@ -59,7 +61,9 @@ public class FCFS implements CPU_Scheduling{
 			updateWaitTime();	
 			time++;
 		}
-		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT()+"\nCpu utilization rate:"
+		DecimalFormat nf = new DecimalFormat("#0.0");
+		
+		System.out.print("AWT: "+nf.format(getAWT())+"\nART: "+nf.format(getART())+"\nATT: "+nf.format(getATT())+"\nCpu utilization rate:"
 				+ (time-idle)/time);
 	}
 	

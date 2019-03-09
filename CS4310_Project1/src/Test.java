@@ -111,7 +111,7 @@ public class Test {
 						"\n" + 
 						" \n" + 
 						"\n" + 
-						"-->Bad Input\n" + 
+						"-->Bad Input ps:this is a dog not a bug\n" + 
 						"\n" + 
 						"");
 			

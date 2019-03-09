@@ -1,5 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,10 +33,12 @@ public class RR implements CPU_Scheduling{
 			count += addTaskToQueue(time++);
 			if(!pq.isEmpty()&&runnin[0]==null) {
 				runnin[0]=pq.poll();
+				runnin[0].setArt(time);
 			}
 			if(quantum ==Time_quantum*DOUBLE_TO_INT) {
 				pq.add(runnin[0]);
 				runnin[0] = pq.poll();
+				runnin[0].setArt(time);
 				System.out.println("Switched job");
 				quantum =0;
 			}
@@ -55,7 +58,11 @@ public class RR implements CPU_Scheduling{
 			updateWaitTime();		
 			quantum++;
 		}
-		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT()+"\nCpu utilization rate:"
+
+		DecimalFormat nf = new DecimalFormat("#0.0");
+		
+		System.out.print("AWT: "+nf.format(getAWT())+"\nART: "+nf.format(getART())+"\nATT: "+nf.format(getATT())+
+				"\nReal ART: "+nf.format(getRealART())+"\nCpu utilization rate:"
 				+ (time-idle)/time);
 	}
 	
@@ -146,6 +153,14 @@ public class RR implements CPU_Scheduling{
 	public double getART() {
 		return getATT()-getAWT();
 	}
+	public double getRealART() {
+
+		double rt = 0;
+		for(rrTask t:taskList) {
+			rt+=t.getArt();
+		}
+		return (rt/taskList.size())/DOUBLE_TO_INT;
+	}
 	
 
 }
@@ -161,6 +176,7 @@ class rrTask implements Comparable<rrTask>{
 	int lifeCycle = 0;//when the process is running, update its time
 	private int waitTime = 0;
 	private double turnAroundTime =0;
+	private double art =-1;
 	public rrTask(int pid, int arrt, int burt, int pri) {
 		Pid =pid;
 		Arrival_Time = arrt;
@@ -229,6 +245,14 @@ class rrTask implements Comparable<rrTask>{
 	public void setTurnAroundTime() {
 		//calculate the turn around time of individual task
 		this.turnAroundTime = completeTime - Arrival_Time;
+	}
+	public double getArt() {
+		return art;
+	}
+	public void setArt(double ar) {
+		if(art==-1) {
+			art = ar - Arrival_Time;
+		}
 	}
 	
 }

@@ -1,5 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,8 +57,11 @@ public class SJF implements CPU_Scheduling{
 			}
 			updateWaitTime();		
 		}
-		System.out.print("AWT: "+getAWT()+"\nART: "+getART()+"\nATT: "+getATT()+"\nCpu utilization rate:"
+
+		DecimalFormat nf = new DecimalFormat("#0.0");	
+		System.out.print("AWT: "+nf.format(getAWT())+"\nART: "+nf.format(getART())+"\nATT: "+nf.format(getATT())+"\nCpu utilization rate:"
 				+ (time-idle)/time);
+	
 	}
 	
 	public double getATT() {
